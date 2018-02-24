@@ -1,21 +1,5 @@
 # **Finding Lane Lines on the Road** 
 
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file. But feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Finding Lane Lines on the Road**
-
-The goals / steps of this project are the following:
-* Make a pipeline that finds lane lines on the road
-* Reflect on your work in a written report
-
-
-[//]: # (Image References)
-
-[image1]: ./examples/grayscale.jpg "Grayscale"
 
 ---
 
@@ -23,25 +7,25 @@ The goals / steps of this project are the following:
 
 ### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+The pipeline consists of several steps:
 
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
-
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
-
-![alt text][image1]
+1. The input image is converted to grayscale
+2. Gaussian Blur with a kernel size of 3 is applied. This helps reduce any noise that is present in the image to aid edge detection
+3. A Canny transform is used to detect all the edges in the image. The output is an image containing the detected edges.
+4. The unwanted portion of the image (anything that is not in front of the vehicle, to just before the vanashing point) is masked out.
+5. A Hough Transform is used on the remaining portion of the image. This gives an array of detected lines (in vector format)
+6. The draw_lines() function was modified to convert the array of lines into slope/intercept form, split into left and right, and averaged together. The left slope is assumed to be -0.7 +- 0.1 and the right slope 0.6 +- 0.1. To redraw the lines onto the image, y values of y=height * 0.6 and y=height were chosen, and the x values calculated by x = (y - b) / m. A line was drawn between these two points.
 
 
 ### 2. Identify potential shortcomings with your current pipeline
 
-
-One potential shortcoming would be what would happen when ... 
-
-Another shortcoming could be ...
+* The current pipeline can only work on straight lines so if there is curvature in the road, lens distortion, or lane markings without straight lines, the line fitting procedure will not work very accurately or at all.
+* There is no filtering or noise reduction, so the reconstructed lane lines will jump around significantly in areas with vauge inputs.
 
 
 ### 3. Suggest possible improvements to your pipeline
 
-A possible improvement would be to ...
-
-Another potential improvement could be to ...
+* Filtering the output to reduce noise
+* Add the ability to better deal with changes in light and contrast
+* Use parabolic curves rather than straight lines
+* Add some sort of weighting to the edge analysis so that good/clear information is given a higher weighting than potential noise.
